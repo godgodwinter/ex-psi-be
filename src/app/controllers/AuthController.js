@@ -66,3 +66,41 @@ exports.signin = async (req, res) => {
         return res.status(500).send({ message: error.message });
     }
 };
+
+exports.me = async (req, res) => {
+    try {
+        console.log('====================================');
+        console.log(req.siswaId);
+        console.log('====================================');
+        let identitas = await Siswa.findOne({
+            where: {
+                id: req.siswaId,
+            },
+        });
+
+
+        const expiredTimer = 86400 * 7; // 24 hours
+        const newToken = jwt.sign({ id: req.siswaId }, config.secret, {
+            expiresIn: expiredTimer,
+        });
+
+        let sekolah = null;
+        let paket = null;
+        let stats = null;
+        let data = {
+            token: null,
+            newToken
+        };
+
+        return res.status(200).send({
+            identitas,
+            sekolah,
+            paket,
+            stats,
+            data
+
+        });
+    } catch (error) {
+        return res.status(500).send({ message: error.message });
+    }
+};

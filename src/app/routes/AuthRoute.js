@@ -1,4 +1,5 @@
 const authController = require("../controllers/AuthController")
+const { authJwt } = require("../middleware");
 module.exports = function (app) {
     app.use(function (req, res, next) {
         // res.header(
@@ -16,6 +17,7 @@ module.exports = function (app) {
 
 
     app.post("/api/siswa/auth/login", authController.signin);
+    app.post("/api/siswa/auth/me", [authJwt.verifyToken], authController.me);
 
     // app.post("/api/auth/signout", controller.signout);
 };
