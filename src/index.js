@@ -49,10 +49,10 @@
 // });
 // server.listen();
 
-import express from "express";
+// import express from "express";
 // const app = express();
 
-// const express = require('express');
+const express = require('express');
 const app = express();
 // Routes
 app.get('/', function (req, res) {
@@ -67,9 +67,12 @@ app.get('/expressjs', function (req, res) {
 });
 
 
+// fastify.register(require('./src/routes'));
 // import PostRoute from "./app/routes/PostRoute.js";
 // const PostRoute = require('./app/routes/PostRoute.js');
 // app.use(PostRoute);
+// ROUTER
+app.use(require('./app/routes/PostRoute'));
 // Listen
 var port = process.env.PORT || 3000;
 app.listen(port);

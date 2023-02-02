@@ -41,4 +41,4 @@ const getAll = async () => {
     // return "test";
 };
 // export default PostService;
-exports.getUsersService
+module.exports = getUsersService
