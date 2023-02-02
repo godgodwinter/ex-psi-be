@@ -23,6 +23,9 @@ app.get("/", (req, res) => {
 
 // SETTINGS SERVER
 const PORT = 8001;
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+// app.listen(PORT, () => {
+//     console.log(`Server is running on http://localhost:${PORT}`);
+// });
+
+app.listen();
+
