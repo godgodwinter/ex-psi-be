@@ -4,37 +4,51 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-        username: {
+        nomeridentitas: {
             type: Sequelize.STRING,
             allowNull: false
+        },
+        username: {
+            type: Sequelize.STRING,
+            allowNull: true
         },
         password: {
             type: Sequelize.STRING,
-            allowNull: false
+            allowNull: true
         },
         jk: {
             type: Sequelize.STRING,
-            allowNull: false
+            allowNull: true
         },
         telp: {
             type: Sequelize.STRING,
-            allowNull: false
+            allowNull: true
         },
-        createdAt: {
+        kelas_id: {
+            field: 'kelas_id',
+            type: Sequelize.BIGINT,
+            allowNull: true
+        },
+        created_at: {
             field: 'created_at',
             type: Sequelize.DATE,
         },
-        updatedAt: {
+        updated_at: {
             field: 'updated_at',
             type: Sequelize.DATE,
         },
     }, {
-        tableName: 'siswa',
+
+        freezeTableName: true, // Model tableName will be the same as the model name
+        timestamps: false,
+        // tableName: 'siswa',
+        underscored: true,
         defaultScope: {
             attributes: { exclude: ['password'] },
         }
 
     });
+
 
     return Siswa;
 };

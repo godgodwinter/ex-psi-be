@@ -4,10 +4,11 @@
 // const siswa = require("../models/siswa.models.js");
 const db = require("../models");
 const Siswa = db.siswa;
+const kelas = db.kelas;
 const Op = db.Sequelize.Op;
 const getUsersService = async (req, res) => {
     try {
-        const response = await Siswa.findAll();
+        const response = await Siswa.findAll({ include: kelas });
         response.forEach((item) => {
             item.test = "tes";
         });

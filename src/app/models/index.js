@@ -1,9 +1,15 @@
 const dbConfig = require("../config/db.config.js");
 
 const Sequelize = require("sequelize");
+//database wide options
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.HOST,
     dialect: dbConfig.dialect,
+    //prevent sequelize from pluralizing table names
+    // define: {
+    //     //prevent sequelize from pluralizing table names
+    //     freezeTableName: true
+    // },
     // operatorsAliases: false,
 
     pool: {
@@ -20,5 +26,12 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.siswa = require("./siswa.model.js")(sequelize, Sequelize);
+db.kelas = require("./kelas.model.js")(sequelize, Sequelize);
+
+db.siswa.belongsTo(db.kelas, {
+    foreignKey: {
+        name: 'kelas_id'
+    },
+});
 
 module.exports = db;

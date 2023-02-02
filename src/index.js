@@ -60,10 +60,10 @@ const dotenv = require('dotenv');
 const app = express();
 
 dotenv.config();
-// app.use(express.json());
+app.use(express.json());
 // console.log(process.env.DB_DATABASE)
 // parse application/json
-app.use(bodyParser.json())
+// app.use(bodyParser.json())
 app.use(cors());
 express.urlencoded({ extended: true });
 
