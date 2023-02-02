@@ -53,7 +53,45 @@
 // const app = express();
 
 const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const dotenv = require('dotenv');
+
 const app = express();
+
+dotenv.config();
+// app.use(express.json());
+// console.log(process.env.DB_DATABASE)
+// parse application/json
+app.use(bodyParser.json())
+app.use(cors());
+express.urlencoded({ extended: true });
+
+
+const db = require("./app/models");
+// db.sequelize.sync()
+//     .then(() => {
+//         console.log("Synced db.");
+//     })
+//     .catch((err) => {
+//         console.log("Failed to sync db: " + err.message);
+//     });
+// try {
+//     await sequelize.authenticate();
+//     console.log('Connection has been established successfully.');
+// } catch (error) {
+//     console.error('Unable to connect to the database:', error);
+// }
+db.sequelize.authenticate()
+    .then(() => {
+        //     console.log('Connection has been established successfully.');
+    })
+    .catch((err) => {
+        console.error('Unable to connect to the database:', err);
+    });
+
+
+
 // Routes
 app.get('/', function (req, res) {
     res.send('Hello World, ini Root Ini root');
@@ -74,6 +112,6 @@ app.get('/expressjs', function (req, res) {
 // ROUTER
 app.use(require('./app/routes/PostRoute'));
 // Listen
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 8001;
 app.listen(port);
 console.log('Listening on localhost:' + port);

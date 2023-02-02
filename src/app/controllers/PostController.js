@@ -1,5 +1,5 @@
 // import { getUsersService } from "../services/PostService.js";
-let getUsersService = require("../services/PostService.js")
+const { getUsersService } = require("../services/PostService.js")
 const getUsers = async (req, res) => {
     try {
         const response = await getUsersService();

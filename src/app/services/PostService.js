@@ -1,17 +1,22 @@
 // https://sequelize.org/docs/v6/core-concepts/raw-queries/
 // import Post from "../models/PostModel.js";
+
+// const siswa = require("../models/siswa.models.js");
+const db = require("../models");
+const Siswa = db.siswa;
+const Op = db.Sequelize.Op;
 const getUsersService = async (req, res) => {
     try {
-        // const response = await Post.findAll();
-        // response.forEach((item) => {
-        //   item.test = "tes";
-        // });
+        const response = await Siswa.findAll();
+        response.forEach((item) => {
+            item.test = "tes";
+        });
         // // const response = "tes";
         // // res.status(200).json(response);
-        const response = [
-            { id: 1, name: "11" },
-            { id: 2, name: "22" },
-        ];
+        // const response = [
+        //     { id: 1, name: "11" },
+        //     { id: 2, name: "22" },
+        // ];
         // const response = await getAll();
 
         console.log(response);
@@ -41,4 +46,4 @@ const getAll = async () => {
     // return "test";
 };
 // export default PostService;
-module.exports = getUsersService
+module.exports = { getAll, getUsersService }
