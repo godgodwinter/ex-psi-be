@@ -45,8 +45,12 @@ module.exports = (sequelize, Sequelize) => {
         underscored: true,
         defaultScope: {
             attributes: { exclude: ['password'] },
+        },
+        scopes: {
+            withPassword: {
+                attributes: {},
+            }
         }
-
     });
 
 
