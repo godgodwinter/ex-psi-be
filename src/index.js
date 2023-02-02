@@ -49,11 +49,11 @@
 // });
 // server.listen();
 
-// import express from "express";
+import express from "express";
 // const app = express();
 
-var express = require('express');
-var app = express();
+// const express = require('express');
+const app = express();
 // Routes
 app.get('/', function (req, res) {
     res.send('Hello World, ini Root Ini root');
@@ -65,6 +65,11 @@ app.get('/ts', function (req, res) {
 app.get('/expressjs', function (req, res) {
     res.send('Hello World, ini expressJS');
 });
+
+
+// import PostRoute from "./app/routes/PostRoute.js";
+// const PostRoute = require('./app/routes/PostRoute.js');
+// app.use(PostRoute);
 // Listen
 var port = process.env.PORT || 3000;
 app.listen(port);
