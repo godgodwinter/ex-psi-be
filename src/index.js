@@ -49,12 +49,14 @@
 // });
 // server.listen();
 
-import express from "express";
-const app = express();
-// var app = express();
+// import express from "express";
+// const app = express();
+
+var express = require('express');
+var app = express();
 // Routes
 app.get('/', function (req, res) {
-    res.send('Hello World, ini Root');
+    res.send('Hello World, ini Root Ini root');
 });
 app.get('/expressjs', function (req, res) {
     res.send('Hello World, ini expressJS');
