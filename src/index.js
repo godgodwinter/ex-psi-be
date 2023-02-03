@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const multer = require('multer');
-const expressBusboy = require('express-busboy');
+// const expressBusboy = require('express-busboy');
 
 
 const app = express();
@@ -16,7 +16,7 @@ dotenv.config();
 // parse application/json
 app.use(cors());
 //form / parser
-expressBusboy.extend(app);
+// expressBusboy.extend(app);
 app.use(bodyParser.json())
 const forms = multer();
 // parse requests of content-type - application/x-www-form-urlencoded

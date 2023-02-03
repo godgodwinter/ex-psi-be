@@ -1,6 +1,9 @@
 const db = require("../models");
 const config = require("../config/auth.config");
+const sekolahService = require("../services/sekolah/sekolah.service")
 const Siswa = db.siswa;
+const kelas = db.kelas;
+const sekolah = db.sekolah;
 
 const Op = db.Sequelize.Op;
 
@@ -9,7 +12,7 @@ const bcrypt = require("bcryptjs");
 
 
 exports.signin = async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     try {
         const user = await Siswa.scope('withPassword').findOne({
             where: {
@@ -69,9 +72,9 @@ exports.signin = async (req, res) => {
 
 exports.me = async (req, res) => {
     try {
-        console.log('====================================');
-        console.log(req.siswaId);
-        console.log('====================================');
+        // console.log('====================================');
+        // console.log(req.siswaId);
+        // console.log('====================================');
         let identitas = await Siswa.findOne({
             where: {
                 id: req.siswaId,
@@ -98,6 +101,60 @@ exports.me = async (req, res) => {
             paket,
             stats,
             data
+
+        });
+    } catch (error) {
+        return res.status(500).send({ message: error.message });
+    }
+};
+
+
+exports.me_ujian = async (req, res) => {
+    try {
+        // console.log('====================================');
+        // console.log(req.siswaId);
+        // console.log('====================================');
+        let me = await Siswa.findOne({
+            where: {
+                id: req.siswaId,
+            },
+            include: [db.kelas, db.sekolah]
+        });
+
+        const expiredTimer = 86400 * 7; // 24 hours
+        const newToken = jwt.sign({ id: req.siswaId }, config.secret, {
+            expiresIn: expiredTimer,
+        });
+        let sekolah = me?.sekolah;
+        let kelas = me?.kelas;
+        let stats = null;
+        let data = {
+            token: null,
+            newToken
+        };
+        let profile = me
+        // delete profile.kelas;
+        // delete profile.sekolah;
+        // console.log(profile);
+        let paket = await sekolahService.getPaket(sekolah?.paket_id);
+        console.log('====================================');
+        console.log(paket);
+        console.log('====================================');
+        let identitas = {
+            sekolah,
+            kelas,
+            profile,
+            paket,
+        }
+
+
+        let kelas_id = me?.kelas_id;
+        let ujian = [];
+
+        return res.status(200).send({
+            identitas,
+            kelas_id,
+            ujian
 
         });
     } catch (error) {

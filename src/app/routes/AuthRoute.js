@@ -18,6 +18,7 @@ module.exports = function (app) {
 
     app.post("/api/siswa/auth/login", authController.signin);
     app.post("/api/siswa/auth/me", [authJwt.verifyToken], authController.me);
+    app.post("/api/siswa/auth/me_ujian", [authJwt.verifyToken], authController.me_ujian);
 
     // app.post("/api/auth/signout", controller.signout);
 };
