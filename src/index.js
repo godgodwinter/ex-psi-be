@@ -23,7 +23,6 @@ const forms = multer();
 express.urlencoded({ extended: true });
 const cookieSession = require("cookie-session");
 
-
 const db = require("./app/models");
 db.sequelize.authenticate()
     .then(() => {

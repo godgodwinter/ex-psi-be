@@ -2,7 +2,7 @@ module.exports = (sequelize, Sequelize) => {
     const ujian_proses_kelas_siswa = sequelize.define("ujian_proses_kelas_siswa", {
         // data
         hasil_akhir: {
-            type: Sequelize.INT,
+            type: Sequelize.BIGINT,
             allowNull: true,
         },
 

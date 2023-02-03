@@ -1,11 +1,14 @@
 //IMPORT
-const { ujian_paketsoal } = require("../../models");
 const db = require("../../models");
+const moment = require('moment');
+const localization = require('moment/locale/id')
+moment.updateLocale("id", localization);
 // DB
 const Siswa = db.siswa;
 const kelas = db.kelas;
 const sekolah = db.sekolah;
-const ujian_proses_kelas = db.ujian_proses_kelas;
+// proses
+const { ujian_paketsoal, ujian_proses_kelas_siswa, ujian_proses_kelas, ujian_proses_kelas_siswa_kategori } = require("../../models");
 const Op = db.Sequelize.Op;
 // RELATION
 
@@ -29,10 +32,23 @@ const getDataUjian = async (meId) => {
     }
 };
 
-const periksaUjianAktif = async (sekolah_id) => {
+const periksaUjianAktif = async (meId) => {
     try {
         // const response = await paket.findOne({ where: { id: sekolah_id } });
         let data = null;
+        const me = await fn_get_me(meId);
+        const resProsesKelas = await ujian_proses_kelas.findOne({ where: { kelas_id: me?.kelas?.id }, include: [db.ujian_proses] });
+        let ujian_proses_kelas_id = resProsesKelas.id;
+        const resProsesKelasSiswa = await ujian_proses_kelas_siswa.findOne({ where: { ujian_proses_kelas_id } });
+        let ujianProsesKelasSiswaId = resProsesKelasSiswa.id;
+        const resProsesKelasSiswaKategori = await ujian_proses_kelas_siswa_kategori.findOne({ where: { ujian_proses_kelas_siswa_id: ujianProsesKelasSiswaId, status: 'Aktif' }, order: [['updated_at', 'desc']] });
+        let { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at } = resProsesKelasSiswaKategori;
+        data = { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at };
+        console.log(moment().format("YYYY-MMMM-DD"));
+        data.sisa_waktu = 0;
+        data.sisa_waktu_dalam_menit = 0;
+        data.ujian_proses_kelas_id = 0;
+        data.ujian_proses_kelas_siswa = {};
         return data;
     } catch (error) {
         console.log(error.message);
