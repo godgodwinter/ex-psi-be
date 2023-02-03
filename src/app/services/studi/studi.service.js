@@ -1,5 +1,7 @@
 //IMPORT
 const db = require("../../models");
+// MOMENT 
+//* https://devhints.io/moment
 const moment = require('moment');
 const localization = require('moment/locale/id')
 moment.updateLocale("id", localization);
@@ -44,11 +46,13 @@ const periksaUjianAktif = async (meId) => {
         const resProsesKelasSiswaKategori = await ujian_proses_kelas_siswa_kategori.findOne({ where: { ujian_proses_kelas_siswa_id: ujianProsesKelasSiswaId, status: 'Aktif' }, order: [['updated_at', 'desc']] });
         let { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at } = resProsesKelasSiswaKategori;
         data = { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at };
-        console.log(moment().format("YYYY-MMMM-DD"));
-        data.sisa_waktu = 0;
-        data.sisa_waktu_dalam_menit = 0;
-        data.ujian_proses_kelas_id = 0;
-        data.ujian_proses_kelas_siswa = {};
+        // console.log(moment().format("YYYY-MMMM-DD"));
+        let getSisaWaktu = await fn_get_sisa_waktu(tgl_selesai);
+        data.sisa_waktu = getSisaWaktu?.detik;
+        data.sisa_waktu_dalam_menit = getSisaWaktu?.menit;
+        data.ujian_proses_kelas_id = ujian_proses_kelas_id;
+        data.ujian_proses_kelas_siswa = resProsesKelasSiswa;
+        data.getSisaWaktu = getSisaWaktu;
         return data;
     } catch (error) {
         console.log(error.message);
@@ -69,8 +73,21 @@ const fn_periksa_ujian_aktif = async (id) => {
 
 const fn_get_sisa_waktu = async (tgl_selesai) => {
     try {
+        let result = {
+            detik: 0,
+            menit: 0
+        };
+        let selesai = moment(tgl_selesai);
+        let now = moment();
+        let duration = moment.duration(selesai.diff(now));
+        result.detik = duration.asSeconds().toFixed(0)
+        result.menit = duration.asMinutes().toFixed(2)
+        result.now = now
+        result.selesai = selesai
+        // result = parseInt(Date.parse(tgl_selesai)) - parseInt(Date.parse(moment().format("YYYY-MM-DD H:i:s")));
+        // console.log(result);
         // const response = await Siswa.findOne({ where: { id }, include: kelas });
-        // return response;
+        return result;
     } catch (error) {
         console.log(error.message);
     }
