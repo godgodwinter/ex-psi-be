@@ -137,9 +137,9 @@ exports.me_ujian = async (req, res) => {
         // delete profile.sekolah;
         // console.log(profile);
         let paket = await sekolahService.getPaket(sekolah?.paket_id);
-        console.log('====================================');
-        console.log(paket);
-        console.log('====================================');
+        // console.log('====================================');
+        // console.log(paket);
+        // console.log('====================================');
         let identitas = {
             sekolah,
             kelas,

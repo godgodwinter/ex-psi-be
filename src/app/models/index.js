@@ -24,14 +24,19 @@ const db = {};
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-
+// MASTERING
 db.siswa = require("./siswa.model.js")(sequelize, Sequelize);
 db.kelas = require("./kelas.model.js")(sequelize, Sequelize);
 
 db.sekolah = require("./sekolah.model.js")(sequelize, Sequelize);
 db.paket = require("./paket.model.js")(sequelize, Sequelize);
+// !MASTERING-RELASI
+db.siswa.belongsTo(db.kelas, {
+    foreignKey: {
+        name: 'kelas_id'
+    },
+});
 
-// RELASI
 db.siswa.belongsTo(db.kelas, {
     foreignKey: {
         name: 'kelas_id'
@@ -49,6 +54,28 @@ db.sekolah.belongsTo(db.paket, {
         name: 'paket_id'
     },
 });
+// !MASTERING-RELASI
+// MASTERING-END
+
+// UJIAN-STUDI
+// paketsoal
+db.ujian_paketsoal = require("./studi/ujian_paketsoal.model.js")(sequelize, Sequelize);
+// proses
+db.ujian_proses = require("./studi/ujian_proses.model.js")(sequelize, Sequelize);
+db.ujian_proses_kelas = require("./studi/ujian_proses_kelas.model.js")(sequelize, Sequelize);
+
+db.ujian_proses_kelas.belongsTo(db.ujian_proses, {
+    foreignKey: {
+        name: 'ujian_proses_id'
+    },
+});
+db.ujian_proses_kelas.belongsTo(db.ujian_paketsoal, {
+    foreignKey: {
+        name: 'paketsoal_id'
+    },
+});
+// !MASTERING-RELASI
+// UJIAN-STUDI-END
 
 
 module.exports = db;

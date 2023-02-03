@@ -8,5 +8,5 @@ module.exports = function (app) {
     });
 
     app.get("/api/siswa/data/ujian", [authJwt.verifyToken], studiController.getDataUjian);
-    app.get("/api/siswa/data/periksa/ujianaktif", [authJwt.verifyToken], studiController.getDataUjian);
+    app.get("/api/siswa/data/periksa/ujianaktif", [authJwt.verifyToken], studiController.periksaUjianAktif);
 };

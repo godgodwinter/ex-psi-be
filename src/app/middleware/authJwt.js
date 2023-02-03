@@ -34,6 +34,7 @@ verifyToken = (req, res, next) => {
         // console.log(decoded);
         // console.log('====================================');
         req.siswaId = decoded.id;
+        req.meId = decoded.id;
         next();
     });
 };
