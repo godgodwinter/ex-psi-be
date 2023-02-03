@@ -64,6 +64,7 @@ app.get('/expressjs', function (req, res) {
 // ROUTER
 app.use(require('./app/routes/PostRoute'));
 require('./app/routes/AuthRoute')(app);
+require('./app/routes/studi.route')(app);
 // Listen
 var port = process.env.PORT || 8001;
 app.listen(port);
