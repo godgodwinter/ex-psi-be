@@ -63,6 +63,9 @@ db.ujian_paketsoal = require("./studi/ujian_paketsoal.model.js")(sequelize, Sequ
 // proses
 db.ujian_proses = require("./studi/ujian_proses.model.js")(sequelize, Sequelize);
 db.ujian_proses_kelas = require("./studi/ujian_proses_kelas.model.js")(sequelize, Sequelize);
+db.ujian_proses_kelas_siswa = require("./studi/ujian_proses_kelas_siswa.model.js")(sequelize, Sequelize);
+db.ujian_proses_kelas_siswa_kategori = require("./studi/ujian_proses_kelas_siswa_kategori.model.js")(sequelize, Sequelize);
+db.ujian_proses_kelas_siswa_kategori_hasil = require("./studi/ujian_proses_kelas_siswa_kategori_hasil.model.js")(sequelize, Sequelize);
 
 db.ujian_proses_kelas.belongsTo(db.ujian_proses, {
     foreignKey: {
