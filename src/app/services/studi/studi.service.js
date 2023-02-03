@@ -53,6 +53,9 @@ const periksaUjianAktif = async (meId) => {
         data.ujian_proses_kelas_id = ujian_proses_kelas_id;
         data.ujian_proses_kelas_siswa = resProsesKelasSiswa;
         data.getSisaWaktu = getSisaWaktu;
+        if (data.sisa_waktu < 0) {
+            return null
+        }
         return data;
     } catch (error) {
         console.log(error.message);
