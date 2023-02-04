@@ -10,7 +10,7 @@ module.exports = function (app) {
     app.get("/api/siswa/data/ujian", [authJwt.verifyToken], studiController.getDataUjian);//sudah
     app.get("/api/siswa/data/periksa/ujianaktif", [authJwt.verifyToken], studiController.periksaUjianAktif);//sudah
     app.post("/api/siswa/data/ujian/:ujian_proses_kelas_id/ujian_daftar", [authJwt.verifyToken], studiController.doUjianDaftar);
-    // app.get("api/siswa/data/ujian/2/periksa_daftar", [authJwt.verifyToken], studiController.periksaUjianDaftar);
+    app.get("/api/siswa/data/ujian/:ujian_proses_kelas_id/periksa_daftar", [authJwt.verifyToken], studiController.periksa_daftar);
     // app.get("api/siswa/data/ujian/proses_kelas/2/paketsoal/2/kategori_soal", [authJwt.verifyToken], studiController.getKategoriSoal); //pilihan paket
     // app.get("api/siswa/data/ujian/3/kategori_soal_detail/4", [authJwt.verifyToken], studiController.getKategoriSoalDetail); //instruksi dll
     // app.post("api/siswa/data/dataujian/2/paketsoal/1/mulai_ujian", [authJwt.verifyToken], studiController.doMulaiUjian);

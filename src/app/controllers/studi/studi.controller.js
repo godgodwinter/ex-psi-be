@@ -74,3 +74,26 @@ exports.doUjianDaftar = async (req, res) => {
         return res.status(500).send({ message: error.message });
     }
 };
+exports.periksa_daftar = async (req, res) => {
+    // console.log(req.params.ujian_proses_kelas_id);
+    try {
+        let success = false;
+        let data = null
+        // let message = "Tidak ada ujian aktif";
+        let response = await studiService.periksa_daftar(req.meId, req.params.ujian_proses_kelas_id);
+        if (response) {
+            success = response.success;
+            data = response.data;
+            // message = "Ujian aktif ditemukan";
+        } else {
+            data = "Siswa Belum daftar";
+        }
+        return res.status(200).send({
+            success,
+            data,
+            // message
+        });
+    } catch (error) {
+        return res.status(500).send({ message: error.message });
+    }
+};

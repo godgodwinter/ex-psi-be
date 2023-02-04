@@ -69,6 +69,7 @@ const doUjianDaftar = async (meId, ujian_proses_kelas_id) => {
         let data = null;
         const me = await fn_get_me(meId);
         const periksaKelas = await fn_is_kelas_saya_terdaftar(me.kelas_id);
+        const getDataKelas = await ujian_proses_kelas.findOne({ where: { id: ujian_proses_kelas_id } });
         // console.log(periksaKelas);
         if (periksaKelas == false) {
             return false
@@ -78,7 +79,8 @@ const doUjianDaftar = async (meId, ujian_proses_kelas_id) => {
         if (periksaSiswaSudahDaftarUjian) {
             return {
                 success: false,
-                data: "Data sudah ada"
+                data: "Data sudah ada",
+                paketsoal_id: getDataKelas.paketsoal_id
             }
         }
         // insert ujian_proses_kelas_siswa
@@ -92,12 +94,29 @@ const doUjianDaftar = async (meId, ujian_proses_kelas_id) => {
         console.log(doInsertProsesSiswa);
         // !jika periksa kelas ada dan proses selanjutnya true
 
-        const getDataKelas = await ujian_proses_kelas.findOne({ where: { id: ujian_proses_kelas_id } });
         return {
             success: true,
             data: doInsertProsesSiswa,
             paketsoal_id: getDataKelas.paketsoal_id
         }
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+const periksa_daftar = async (meId, ujian_proses_kelas_id) => {
+    try {
+        let data = null;
+        const me = await fn_get_me(meId);
+        // periksa apakah siswa sudah daftar ujian
+        const periksaSiswaSudahDaftarUjian = await fn_is_siswa_sudah_daftar_ujian(ujian_proses_kelas_id, meId);
+        if (periksaSiswaSudahDaftarUjian) {
+            return {
+                success: true,
+                data: "Siswa Sudah daftar",
+            }
+        }
+        return data
 
     } catch (error) {
         console.log(error.message);
@@ -205,4 +224,4 @@ const fn_get_me = async (id) => {
     }
 };
 // EXPORT MODULE
-module.exports = { getDataUjian, periksaUjianAktif, doUjianDaftar }
+module.exports = { getDataUjian, periksaUjianAktif, doUjianDaftar, periksa_daftar }
