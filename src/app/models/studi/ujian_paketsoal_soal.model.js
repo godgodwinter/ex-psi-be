@@ -46,6 +46,10 @@ module.exports = (sequelize, Sequelize) => {
         },
 
         // timestamp
+        deleted_at: {
+            field: 'deleted_at',
+            type: Sequelize.DATE,
+        },
         created_at: {
             field: 'created_at',
             type: Sequelize.DATE,

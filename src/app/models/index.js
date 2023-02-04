@@ -60,6 +60,9 @@ db.sekolah.belongsTo(db.paket, {
 // UJIAN-STUDI
 // paketsoal
 db.ujian_paketsoal = require("./studi/ujian_paketsoal.model.js")(sequelize, Sequelize);
+db.ujian_paketsoal_kategori = require("./studi/ujian_paketsoal_kategori.model.js")(sequelize, Sequelize);
+db.ujian_paketsoal_soal = require("./studi/ujian_paketsoal_soal.model.js")(sequelize, Sequelize);
+db.ujian_paketsoal_soal_pilihanjawaban = require("./studi/ujian_paketsoal_soal_pilihanjawaban.model.js")(sequelize, Sequelize);
 // proses
 db.ujian_proses = require("./studi/ujian_proses.model.js")(sequelize, Sequelize);
 db.ujian_proses_kelas = require("./studi/ujian_proses_kelas.model.js")(sequelize, Sequelize);
@@ -75,6 +78,11 @@ db.ujian_proses_kelas.belongsTo(db.ujian_proses, {
 db.ujian_proses_kelas.belongsTo(db.ujian_paketsoal, {
     foreignKey: {
         name: 'paketsoal_id'
+    },
+});
+db.ujian_proses_kelas_siswa_kategori.belongsTo(db.ujian_proses_kelas_siswa, {
+    foreignKey: {
+        name: 'ujian_proses_kelas_siswa_id'
     },
 });
 // !MASTERING-RELASI

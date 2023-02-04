@@ -10,7 +10,7 @@ const Siswa = db.siswa;
 const kelas = db.kelas;
 const sekolah = db.sekolah;
 // proses
-const { ujian_paketsoal, ujian_proses_kelas_siswa, ujian_proses_kelas, ujian_proses_kelas_siswa_kategori } = require("../../models");
+const { ujian_paketsoal, ujian_proses_kelas_siswa, ujian_proses_kelas, ujian_proses_kelas_siswa_kategori, ujian_paketsoal_kategori, ujian_paketsoal_soal } = require("../../models");
 const Op = db.Sequelize.Op;
 // RELATION
 
@@ -122,6 +122,83 @@ const periksa_daftar = async (meId, ujian_proses_kelas_id) => {
         console.log(error.message);
     }
 };
+const getKategoriSoal = async (meId, ujian_proses_kelas_id, ujian_paketsoal_id) => {
+    try {
+        let data = null;
+        const me = await fn_get_me(meId);
+        const periksaKelas = await fn_is_kelas_saya_terdaftar(me.kelas_id);
+        const getDataKelas = await ujian_proses_kelas.findOne({ where: { id: ujian_proses_kelas_id } });
+        // console.log(periksaKelas);
+        if (periksaKelas == false) {
+            return {
+                success: false,
+                data: "Kelas tidak terdaftar"
+            }
+        }
+
+
+        // periksa apakah siswa sudah daftar ujian
+        const periksaSiswaSudahDaftarUjian = await fn_is_siswa_sudah_daftar_ujian(ujian_proses_kelas_id, meId);
+        if (periksaSiswaSudahDaftarUjian) {
+            //  ujian_paketsoal_kategori get wher ujian_paketsoal_id
+            const getKategori = await ujian_paketsoal_kategori.findAll({ where: { ujian_paketsoal_id: ujian_paketsoal_id } })
+
+            // console.log(ujian_paketsoal_id, getKategori);
+            for (const tempData of getKategori) {
+                let jumlah_soal = 0;
+                let status = 'Belum';
+                let tipe = 'Pilihan ganda';
+
+                const getStatsPerKategori = await db.ujian_paketsoal_soal.count({
+                    where: {
+                        ujian_paketsoal_kategori_id: tempData.id, deleted_at: null
+                    }
+                })
+                // console.log(tempData.id, getStatsPerKategori);
+                let getStatus = await db.ujian_proses_kelas_siswa_kategori.findOne({
+                    where: {
+                        ujian_paketsoal_kategori_id: tempData.id
+                    },
+                    include: [
+                        {
+                            model: db.ujian_proses_kelas_siswa,
+                            attributes: ['id', 'status'],
+                            where: {
+                                siswa_id: meId
+                            }
+                        }
+                    ]
+                })
+                console.log(getStatus, tempData.id);
+                // break;
+                status = getStatus?.status;
+                let getSisaWaktu = 0;
+                if (getStatus) {
+                    if (getStatus?.status == 'Aktif') {
+                        getSisaWaktu = await fn_get_sisa_waktu(getStatus.tgl_selesai);
+                        if (getSisaWaktu.detik < 1) {
+                            status = 'Selesai'
+                        }
+                    }
+                }
+                tempData.setDataValue("jumlah_soal", getStatsPerKategori)
+                tempData.setDataValue("status", getStatus ? status : 'Belum')
+                tempData.setDataValue("jml_soal", getStatsPerKategori)
+                tempData.setDataValue("tipe", tipe)
+                // data.push(element);
+            }
+
+            return {
+                success: true,
+                data: getKategori,
+                periksa: true
+            }
+        }
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
 
 
 // private function
@@ -224,4 +301,4 @@ const fn_get_me = async (id) => {
     }
 };
 // EXPORT MODULE
-module.exports = { getDataUjian, periksaUjianAktif, doUjianDaftar, periksa_daftar }
+module.exports = { getDataUjian, periksaUjianAktif, doUjianDaftar, periksa_daftar, getKategoriSoal }
