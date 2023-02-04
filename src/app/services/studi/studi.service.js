@@ -438,6 +438,53 @@ const getSoal = async (meId, ujian_proses_kelas_id, ujian_paketsoal_kategori_id,
         data: result_getSoal,
     }
 }
+const doInsertJawaban = async (meId, ujian_proses_kelas_siswa_kategori_id) => {
+
+    let data = null;
+    const me = await fn_get_me(meId);
+    const periksaKelas = await fn_is_kelas_saya_terdaftar(me.kelas_id);
+    // const getDataKelas = await ujian_proses_kelas.findOne({ where: { id: ujian_proses_kelas_id } });
+    // // console.log(periksaKelas);
+    if (periksaKelas == false) {
+        return {
+            success: false,
+            data: "Kelas tidak terdaftar"
+        }
+    }
+
+    // elseseses
+    return {
+        success: true,
+        data: "Skrip here",
+    }
+}
+const doFinish = async (meId, ujian_proses_kelas_siswa_kategori_id) => {
+
+    let data = null;
+    const me = await fn_get_me(meId);
+    const periksaKelas = await fn_is_kelas_saya_terdaftar(me.kelas_id);
+    // const getDataKelas = await ujian_proses_kelas.findOne({ where: { id: ujian_proses_kelas_id } });
+    // // console.log(periksaKelas);
+    if (periksaKelas == false) {
+        return {
+            success: false,
+            data: "Kelas tidak terdaftar"
+        }
+    }
+    const get_ujian_proses_kelas_siswa_kategori = await db.ujian_proses_kelas_siswa_kategori.findOne({ where: { id: ujian_proses_kelas_siswa_kategori_id } })
+    // console.log(get_ujian_proses_kelas_siswa_kategori);
+    get_ujian_proses_kelas_siswa_kategori.set({
+        updated_at: moment().format("YYYY-MM-DD H:m:ss"),
+        status: "Selesai"
+    });
+    await get_ujian_proses_kelas_siswa_kategori.save();
+    // elseseses
+    return {
+        success: true,
+        // data: get_ujian_proses_kelas_siswa_kategori
+        data: "Proses finish berhasil!",
+    }
+}
 
 // private function
 // !fn-ujian-studi
@@ -589,4 +636,4 @@ const fn_random_array = arr => {
     return newArr
 };
 // EXPORT MODULE
-module.exports = { getDataUjian, getDataUjianEdit, periksaUjianAktif, doUjianDaftar, periksa_daftar, getKategoriSoal, getKategoriSoalDetail, doMulaiUjian, getSoal }
+module.exports = { getDataUjian, getDataUjianEdit, periksaUjianAktif, doUjianDaftar, periksa_daftar, getKategoriSoal, getKategoriSoalDetail, doMulaiUjian, getSoal, doInsertJawaban, doFinish }

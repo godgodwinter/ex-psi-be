@@ -212,3 +212,51 @@ exports.getSoal = async (req, res) => {
         return res.status(500).send({ message: error.message });
     }
 };
+exports.doInsertJawaban = async (req, res) => {
+    // console.log(req.params.ujian_proses_kelas_id);
+    try {
+        let success = false;
+        let data = null
+        // let message = "Tidak ada ujian aktif";
+        let response = await studiService.doInsertJawaban(req.meId, req.params.ujian_proses_kelas_siswa_kategori_id);
+        if (response) {
+            success = response.success;
+            data = response.data;
+            message = response.message;
+            // message = "Ujian aktif ditemukan";
+        } else {
+            data = "-";
+        }
+        return res.status(200).send({
+            success,
+            data,
+            message
+        });
+    } catch (error) {
+        return res.status(500).send({ message: error.message });
+    }
+};
+exports.doFinish = async (req, res) => {
+    // console.log(req.params.ujian_proses_kelas_id);
+    try {
+        let success = false;
+        let data = null
+        // let message = "Tidak ada ujian aktif";
+        let response = await studiService.doFinish(req.meId, req.params.ujian_proses_kelas_siswa_kategori_id);
+        if (response) {
+            success = response.success;
+            data = response.data;
+            message = response.message;
+            // message = "Ujian aktif ditemukan";
+        } else {
+            data = "-";
+        }
+        return res.status(200).send({
+            success,
+            data,
+            message
+        });
+    } catch (error) {
+        return res.status(500).send({ message: error.message });
+    }
+};
