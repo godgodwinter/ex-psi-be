@@ -8,7 +8,7 @@ const kelas = db.kelas;
 const Op = db.Sequelize.Op;
 const getUsersService = async (req, res) => {
     try {
-        const response = await Siswa.findAll({ include: kelas });
+        const response = await Siswa.findAll({ offset: 0, limit: 10, include: kelas });
         response.forEach((item) => {
             item.test = "tes";
         });
