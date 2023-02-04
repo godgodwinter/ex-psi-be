@@ -377,6 +377,68 @@ const doMulaiUjian = async (meId, ujian_proses_kelas_id, ujian_paketsoal_kategor
     }
 };
 
+
+const getSoal = async (meId, ujian_proses_kelas_id, ujian_paketsoal_kategori_id, ujian_proses_kelas_siswa_kategori_id) => {
+
+    let data = null;
+    const me = await fn_get_me(meId);
+    const periksaKelas = await fn_is_kelas_saya_terdaftar(me.kelas_id);
+    // const getDataKelas = await ujian_proses_kelas.findOne({ where: { id: ujian_proses_kelas_id } });
+    // // console.log(periksaKelas);
+    if (periksaKelas == false) {
+        return {
+            success: false,
+            data: "Kelas tidak terdaftar"
+        }
+    }
+
+    const getUjian_proses_kelas_siswa_kategori = await db.ujian_proses_kelas_siswa_kategori.findOne({ where: { id: ujian_proses_kelas_siswa_kategori_id } })
+    const periksaWaktuHabis = await fn_is_waktu_habis(getUjian_proses_kelas_siswa_kategori.tgl_mulai, getUjian_proses_kelas_siswa_kategori.tgl_selesai)
+    // console.log(periksaWaktuHabis);
+    if (periksaWaktuHabis === false) {
+        return {
+            success: false,
+            data: "Waktu Ujian telah habis!"
+        }
+    }
+
+    const get_ujian_paketsoal_kategori = await db.ujian_paketsoal_kategori.findOne({ where: { id: ujian_paketsoal_kategori_id } })
+    let random_soal = get_ujian_paketsoal_kategori.random_soal == 'Aktif' ? true : false;
+    let random_pilihanjawaban = get_ujian_paketsoal_kategori.random_pilihanjawaban == 'Aktif' ? true : false;
+    let getSoal = await db.ujian_paketsoal_soal.findAll({
+        where: {
+            ujian_paketsoal_kategori_id
+        },
+        order: [['nomer_urut', 'ASC']]
+    })
+    console.log(getSoal);
+    let result_getSoal = random_soal ? fn_random_array(getSoal) : getSoal;
+    console.log(result_getSoal);
+
+
+    let dataSoal = [];
+    for (const soal of getSoal) {
+        let pilihan_jawaban = await db.ujian_paketsoal_soal_pilihanjawaban.findAll({ where: { ujian_paketsoal_soal_id: soal.id } })
+        let result_pilihan_jawaban = random_pilihanjawaban ? fn_random_array(pilihan_jawaban) : pilihan_jawaban;
+        let getJawabanKu = await db.ujian_proses_kelas_siswa_kategori_hasil.findOne({ where: { ujian_paketsoal_soal_id: soal.id, ujian_proses_kelas_siswa_kategori_id } })
+        soal.setDataValue("jawaban_ku", getJawabanKu ? getJawabanKu.kode_jawaban : "-")
+        let periksa_file_audio = await db.ujian_files.findOne({ where: { kode_soal: soal.kode_soal } })
+        let file_audio = null
+        if (periksa_file_audio) {
+            file_audio = `${process.env.BASE_URL_FILES}${periksa_file_audio.files}`
+        }
+        soal.setDataValue("audio", file_audio)
+        soal.setDataValue("pilihan_jawaban", result_pilihan_jawaban)
+        dataSoal.push(soal)
+    }
+    data = dataSoal
+    // elseseses
+    return {
+        success: true,
+        data: result_getSoal,
+    }
+}
+
 // private function
 // !fn-ujian-studi
 const fn_periksa_ujian_aktif = async (meId) => {
@@ -419,8 +481,8 @@ const fn_get_sisa_waktu = async (tgl_selesai) => {
         let selesai = moment(tgl_selesai);
         let now = moment();
         let duration = moment.duration(selesai.diff(now));
-        result.detik = duration.asSeconds().toFixed(0)
-        result.menit = duration.asMinutes().toFixed(2)
+        result.detik = parseInt(duration.asSeconds().toFixed(0))
+        result.menit = parseFloat(duration.asMinutes().toFixed(2))
         result.now = now
         result.selesai = selesai
         // result = parseInt(Date.parse(tgl_selesai)) - parseInt(Date.parse(moment().format("YYYY-MM-DD H:i:s")));
@@ -440,6 +502,14 @@ const fn_is_waktu_habis = async (tgl_mulai, tgl_selesai) => {
     try {
         // const response = await Siswa.findOne({ where: { id }, include: kelas });
         // return response;
+        const mulai = moment(tgl_mulai);
+        const selesai = moment(tgl_selesai);
+        const now = moment();
+        let result = now.isBetween(mulai, selesai);
+        if (result) {
+            return true
+        }
+        return false
     } catch (error) {
         console.log(error.message);
     }
@@ -510,5 +580,13 @@ const fn_get_ujian_proses_kelas_siswa_id = async (meId) => {
         console.log(error.message);
     }
 };
+const fn_random_array = arr => {
+    const newArr = arr.slice()
+    for (let i = newArr.length - 1; i > 0; i--) {
+        const rand = Math.floor(Math.random() * (i + 1));
+        [newArr[i], newArr[rand]] = [newArr[rand], newArr[i]];
+    }
+    return newArr
+};
 // EXPORT MODULE
-module.exports = { getDataUjian, getDataUjianEdit, periksaUjianAktif, doUjianDaftar, periksa_daftar, getKategoriSoal, getKategoriSoalDetail, doMulaiUjian }
+module.exports = { getDataUjian, getDataUjianEdit, periksaUjianAktif, doUjianDaftar, periksa_daftar, getKategoriSoal, getKategoriSoalDetail, doMulaiUjian, getSoal }

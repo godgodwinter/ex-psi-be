@@ -58,6 +58,7 @@ db.sekolah.belongsTo(db.paket, {
 // MASTERING-END
 
 // UJIAN-STUDI
+db.ujian_files = require("./studi/ujian_files.model.js")(sequelize, Sequelize);
 // paketsoal
 db.ujian_paketsoal = require("./studi/ujian_paketsoal.model.js")(sequelize, Sequelize);
 db.ujian_paketsoal_kategori = require("./studi/ujian_paketsoal_kategori.model.js")(sequelize, Sequelize);
