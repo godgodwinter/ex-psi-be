@@ -10,7 +10,7 @@ const Siswa = db.siswa;
 const kelas = db.kelas;
 const sekolah = db.sekolah;
 // proses
-const { ujian_paketsoal, ujian_proses_kelas_siswa, ujian_proses_kelas, ujian_proses_kelas_siswa_kategori, ujian_paketsoal_kategori, ujian_paketsoal_soal } = require("../../models");
+const { ujian_paketsoal, ujian_proses_kelas_siswa, ujian_proses_kelas, ujian_proses_kelas_siswa_kategori, ujian_paketsoal_kategori, ujian_paketsoal_soal, ujian_paketsoal_soal_pilihanjawaban } = require("../../models");
 const Op = db.Sequelize.Op;
 // RELATION
 
@@ -438,7 +438,7 @@ const getSoal = async (meId, ujian_proses_kelas_id, ujian_paketsoal_kategori_id,
         data: result_getSoal,
     }
 }
-const doInsertJawaban = async (meId, ujian_proses_kelas_siswa_kategori_id) => {
+const doInsertJawaban = async (meId, ujian_proses_kelas_siswa_kategori_id, dataForm) => {
 
     let data = null;
     const me = await fn_get_me(meId);
@@ -451,11 +451,61 @@ const doInsertJawaban = async (meId, ujian_proses_kelas_siswa_kategori_id) => {
             data: "Kelas tidak terdaftar"
         }
     }
+    const get_ujian_proses_kelas_siswa_kategori = await db.ujian_proses_kelas_siswa_kategori.findOne({ where: { id: ujian_proses_kelas_siswa_kategori_id } })
+    const periksa_waktu_habis = await fn_is_waktu_habis(get_ujian_proses_kelas_siswa_kategori.tgl_mulai, get_ujian_proses_kelas_siswa_kategori.tgl_selesai)
+    if (periksa_waktu_habis == false) {
+        return {
+            success: false,
+            data: "Waktu  ujian telah habis"
+        }
+    }
+    let status_jawaban = 'Salah';
+    let skor = 0;
+    let periksa_jawaban_apakah_benar = await db.ujian_paketsoal_soal_pilihanjawaban.findOne({ where: { kode_jawaban: dataForm.kode_jawaban } })
+    if (periksa_jawaban_apakah_benar) {
+        if (periksa_jawaban_apakah_benar.skor > 0) {
+            skor = periksa_jawaban_apakah_benar.skor;
+            status_jawaban = 'Benar';
+        }
+    } else {
+        return {
+            success: false,
+            data: "Data Pilihan Jawaban tidak ditemukan!"
+        }
+    }
+    // ! periksa Jawaban
+    const periksaJawaban = await db.ujian_proses_kelas_siswa_kategori_hasil.count({ where: { ujian_proses_kelas_siswa_kategori_id, ujian_paketsoal_soal_id: dataForm.ujian_paketsoal_soal_id, kode_soal: dataForm.kode_soal } })
 
+    if (periksaJawaban > 0) {
+        const formUpdate = await db.ujian_proses_kelas_siswa_kategori_hasil.findOne({ where: { ujian_proses_kelas_siswa_kategori_id, ujian_paketsoal_soal_id: dataForm.ujian_paketsoal_soal_id, kode_soal: dataForm.kode_soal } })
+
+        // update
+        formUpdate.set({
+            ujian_paketsoal_soal_pilihanjawaban_id: dataForm.ujian_paketsoal_soal_pilihanjawaban_id,
+            kode_jawaban: dataForm.kode_jawaban,
+            status_jawaban,
+            skor
+        });
+        await formUpdate.save();
+    } else {
+        // insert
+
+        const doInsertJawaban = await db.ujian_proses_kelas_siswa_kategori_hasil.create({
+            ujian_proses_kelas_siswa_kategori_id,
+            ujian_paketsoal_soal_id: dataForm.ujian_paketsoal_soal_id,
+            kode_soal: dataForm.kode_soal,
+            ujian_paketsoal_soal_pilihanjawaban_id: dataForm.ujian_paketsoal_soal_pilihanjawaban_id,
+            kode_jawaban: dataForm.kode_jawaban,
+            status_jawaban,
+            skor,
+            created_at: moment().format(),
+            updated_at: moment().format(),
+        });
+    }
     // elseseses
     return {
         success: true,
-        data: "Skrip here",
+        data: "Jawaban berhasil disimpan!",
     }
 }
 const doFinish = async (meId, ujian_proses_kelas_siswa_kategori_id) => {

@@ -218,7 +218,16 @@ exports.doInsertJawaban = async (req, res) => {
         let success = false;
         let data = null
         // let message = "Tidak ada ujian aktif";
-        let response = await studiService.doInsertJawaban(req.meId, req.params.ujian_proses_kelas_siswa_kategori_id);
+        let dataForm = {
+            ujian_paketsoal_soal_id: req.body.ujian_paketsoal_soal_id,
+            kode_soal: req.body.kode_soal,
+            ujian_paketsoal_soal_pilihanjawaban_id: req.body.ujian_paketsoal_soal_pilihanjawaban_id,
+            kode_jawaban: req.body.kode_jawaban,
+        }
+        // console.log('====================================');
+        // console.log(dataForm);
+        // console.log('====================================');
+        let response = await studiService.doInsertJawaban(req.meId, req.params.ujian_proses_kelas_siswa_kategori_id, dataForm);
         if (response) {
             success = response.success;
             data = response.data;
