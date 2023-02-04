@@ -47,3 +47,30 @@ exports.periksaUjianAktif = async (req, res) => {
         return res.status(500).send({ message: error.message });
     }
 };
+
+
+exports.doUjianDaftar = async (req, res) => {
+    // console.log(req.params.ujian_proses_kelas_id);
+    try {
+        let success = false;
+        let data = null
+        // let message = "Tidak ada ujian aktif";
+        let response = await studiService.doUjianDaftar(req.meId, req.params.ujian_proses_kelas_id);
+        if (response) {
+            success = response.success;
+            data = response.data;
+            paketsoal_id = response.paketsoal_id
+            // message = "Ujian aktif ditemukan";
+        } else {
+            data = "Kelas tidak terdaftar untuk paket ini!";
+        }
+        return res.status(200).send({
+            success,
+            data,
+            paketsoal_id
+            // message
+        });
+    } catch (error) {
+        return res.status(500).send({ message: error.message });
+    }
+};

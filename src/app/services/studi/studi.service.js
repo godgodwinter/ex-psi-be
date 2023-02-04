@@ -63,6 +63,48 @@ const periksaUjianAktif = async (meId) => {
 };
 
 
+// !DAFTAR
+const doUjianDaftar = async (meId, ujian_proses_kelas_id) => {
+    try {
+        let data = null;
+        const me = await fn_get_me(meId);
+        const periksaKelas = await fn_is_kelas_saya_terdaftar(me.kelas_id);
+        // console.log(periksaKelas);
+        if (periksaKelas == false) {
+            return false
+        }
+        // periksa apakah siswa sudah daftar ujian
+        const periksaSiswaSudahDaftarUjian = await fn_is_siswa_sudah_daftar_ujian(ujian_proses_kelas_id, meId);
+        if (periksaSiswaSudahDaftarUjian) {
+            return {
+                success: false,
+                data: "Data sudah ada"
+            }
+        }
+        // insert ujian_proses_kelas_siswa
+        const doInsertProsesSiswa = await ujian_proses_kelas_siswa.create({
+            ujian_proses_kelas_id,
+            siswa_id: meId,
+            status: "Aktif",
+            created_at: moment().format(),
+            updated_at: moment().format(),
+        });
+        console.log(doInsertProsesSiswa);
+        // !jika periksa kelas ada dan proses selanjutnya true
+
+        const getDataKelas = await ujian_proses_kelas.findOne({ where: { id: ujian_proses_kelas_id } });
+        return {
+            success: true,
+            data: doInsertProsesSiswa,
+            paketsoal_id: getDataKelas.paketsoal_id
+        }
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+
 // private function
 // !fn-ujian-studi
 const fn_periksa_ujian_aktif = async (id) => {
@@ -97,6 +139,9 @@ const fn_get_sisa_waktu = async (tgl_selesai) => {
 };
 
 
+// return response;
+// periksa jika belum maka insert
+
 const fn_is_waktu_habis = async (tgl_mulai, tgl_selesai) => {
     try {
         // const response = await Siswa.findOne({ where: { id }, include: kelas });
@@ -107,19 +152,26 @@ const fn_is_waktu_habis = async (tgl_mulai, tgl_selesai) => {
 };
 
 
-const fn_is_kelas_saya_teerdaftar = async (kelas_id) => {
+const fn_is_kelas_saya_terdaftar = async (kelas_id) => {
     try {
-        // const response = await Siswa.findOne({ where: { id }, include: kelas });
-        // return response;
+        let result = false;
+        const response = await ujian_proses_kelas.count({ where: { kelas_id, status: 'Aktif' } });
+        if (response > 0) {
+            result = true;
+        }
+        return result;
     } catch (error) {
         console.log(error.message);
     }
 };
 
-const fn_is_sudah_daftar = async (ujian_proses_kelas_id) => {
+const fn_is_siswa_sudah_daftar_ujian = async (ujian_proses_kelas_id, meId) => {
     try {
-        // const response = await Siswa.findOne({ where: { id }, include: kelas });
-        // return response;
+        const response = await ujian_proses_kelas_siswa.count({ where: { ujian_proses_kelas_id, siswa_id: meId } });
+        if (response < 1) {
+            return false
+        }
+        return true;
     } catch (error) {
         console.log(error.message);
     }
@@ -153,4 +205,4 @@ const fn_get_me = async (id) => {
     }
 };
 // EXPORT MODULE
-module.exports = { getDataUjian, periksaUjianAktif }
+module.exports = { getDataUjian, periksaUjianAktif, doUjianDaftar }
