@@ -19,22 +19,64 @@ const getDataUjian = async (meId) => {
     try {
         const me = await fn_get_me(meId);
         let dataUjian = {};
-        const response = await ujian_proses_kelas.findOne({ where: { kelas_id: me?.kelas?.id }, include: [db.ujian_proses] });
+        const response = await ujian_proses_kelas.findAll({ where: { kelas_id: me?.kelas?.id }, include: [db.ujian_proses] });
         dataUjian = response;
-        const { id, status, kelas_id, paketsoal_id, ujian_proses_id, tgl, created_at, updated_at } = response;
-        dataUjian = { id, status, kelas_id, paketsoal_id, ujian_proses_id, tgl, created_at, updated_at };
-        dataUjian.tgl = response?.ujian_proses?.tgl;
-        dataUjian.ujian_proses_status = response?.ujian_proses?.status;
-        const paketsoal = await ujian_paketsoal.findOne({ where: { id: paketsoal_id } });
-        dataUjian.nama = paketsoal?.nama;
+        let data = [];
+        // const { id, status, kelas_id, paketsoal_id, ujian_proses_id, tgl, created_at, updated_at } = response;
+        // dataUjian = { id, status, kelas_id, paketsoal_id, ujian_proses_id, tgl, created_at, updated_at };
+
+        // dataUjian.tgl = response?.ujian_proses?.tgl;
+        // dataUjian.ujian_proses_status = response?.ujian_proses?.status;
+        // const paketsoal = await ujian_paketsoal.findOne({ where: { id: paketsoal_id } });
+        // dataUjian.nama = paketsoal?.nama;
+
         // dataUjian.response = response;
-        return dataUjian;
+
+        for (const tempData of response) {
+            // let jumlah_soal = 0;
+            // let status = 'Belum';
+            // let tipe = 'Pilihan ganda';
+
+            tempData.setDataValue("tgl", response?.ujian_proses?.tgl)
+            tempData.setDataValue("ujian_proses_status", response?.ujian_proses?.status);
+            const paketsoal = await ujian_paketsoal.findOne({ where: { id: tempData.paketsoal_id } });
+            tempData.setDataValue("nama", paketsoal?.nama)
+            data.push(tempData)
+        }
+        return data;
     } catch (error) {
         console.log(error.message);
     }
 };
 
 const periksaUjianAktif = async (meId) => {
+    try {
+        // const response = await paket.findOne({ where: { id: sekolah_id } });
+        let data = null;
+        const me = await fn_get_me(meId);
+        const resProsesKelas = await ujian_proses_kelas.findOne({ where: { kelas_id: me?.kelas?.id }, include: [db.ujian_proses] });
+        let ujian_proses_kelas_id = resProsesKelas.id;
+        const resProsesKelasSiswa = await ujian_proses_kelas_siswa.findOne({ where: { ujian_proses_kelas_id } });
+        let ujianProsesKelasSiswaId = resProsesKelasSiswa.id;
+        const resProsesKelasSiswaKategori = await ujian_proses_kelas_siswa_kategori.findOne({ where: { ujian_proses_kelas_siswa_id: ujianProsesKelasSiswaId, status: 'Aktif' }, order: [['updated_at', 'desc']] });
+        let { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at } = resProsesKelasSiswaKategori;
+        data = { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at };
+        // console.log(moment().format("YYYY-MMMM-DD"));
+        let getSisaWaktu = await fn_get_sisa_waktu(tgl_selesai);
+        data.sisa_waktu = getSisaWaktu?.detik;
+        data.sisa_waktu_dalam_menit = getSisaWaktu?.menit;
+        data.ujian_proses_kelas_id = ujian_proses_kelas_id;
+        data.ujian_proses_kelas_siswa = resProsesKelasSiswa;
+        data.getSisaWaktu = getSisaWaktu;
+        if (data.sisa_waktu < 0) {
+            return null
+        }
+        return data;
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+const getDataUjianEdit = async (meId, ujian_proses_kelas_id) => {
     try {
         // const response = await paket.findOne({ where: { id: sekolah_id } });
         let data = null;
@@ -127,6 +169,7 @@ const getKategoriSoal = async (meId, ujian_proses_kelas_id, ujian_paketsoal_id) 
         let data = null;
         const me = await fn_get_me(meId);
         const periksaKelas = await fn_is_kelas_saya_terdaftar(me.kelas_id);
+        console.log('tes');
         const getDataKelas = await ujian_proses_kelas.findOne({ where: { id: ujian_proses_kelas_id } });
         // console.log(periksaKelas);
         if (periksaKelas == false) {
@@ -135,7 +178,6 @@ const getKategoriSoal = async (meId, ujian_proses_kelas_id, ujian_paketsoal_id) 
                 data: "Kelas tidak terdaftar"
             }
         }
-
 
         // periksa apakah siswa sudah daftar ujian
         const periksaSiswaSudahDaftarUjian = await fn_is_siswa_sudah_daftar_ujian(ujian_proses_kelas_id, meId);
@@ -469,4 +511,4 @@ const fn_get_ujian_proses_kelas_siswa_id = async (meId) => {
     }
 };
 // EXPORT MODULE
-module.exports = { getDataUjian, periksaUjianAktif, doUjianDaftar, periksa_daftar, getKategoriSoal, getKategoriSoalDetail, doMulaiUjian }
+module.exports = { getDataUjian, getDataUjianEdit, periksaUjianAktif, doUjianDaftar, periksa_daftar, getKategoriSoal, getKategoriSoalDetail, doMulaiUjian }

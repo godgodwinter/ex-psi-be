@@ -47,6 +47,27 @@ exports.periksaUjianAktif = async (req, res) => {
         return res.status(500).send({ message: error.message });
     }
 };
+exports.getDataUjianEdit = async (req, res) => {
+    // console.log(req.body);
+    try {
+        let success = false;
+        let message = "Tidak ada ujian aktif";
+        let response = await studiService.getDataUjianEdit(req.meId, req.params.ujian_proses_kelas_id);
+        if (response) {
+            success = true;
+            message = "Ujian aktif ditemukan";
+        } else {
+            response = { ujian_proses_kelas_id: null }
+        }
+        return res.status(200).send({
+            success,
+            data: response,
+            message
+        });
+    } catch (error) {
+        return res.status(500).send({ message: error.message });
+    }
+};
 
 
 exports.doUjianDaftar = async (req, res) => {
