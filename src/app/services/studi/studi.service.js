@@ -169,7 +169,7 @@ const getKategoriSoal = async (meId, ujian_proses_kelas_id, ujian_paketsoal_id) 
                         }
                     ]
                 })
-                console.log(getStatus, tempData.id);
+                // console.log(getStatus, tempData.id);
                 // break;
                 status = getStatus?.status;
                 let getSisaWaktu = 0;
@@ -200,6 +200,30 @@ const getKategoriSoal = async (meId, ujian_proses_kelas_id, ujian_paketsoal_id) 
     }
 };
 
+const getKategoriSoalDetail = async (meId, ujian_proses_kelas_id, kategori_id) => {
+    try {
+        let data = null;
+        const me = await fn_get_me(meId);
+        const periksaKelas = await fn_is_kelas_saya_terdaftar(me.kelas_id);
+        const getDataKelas = await ujian_proses_kelas.findOne({ where: { id: ujian_proses_kelas_id } });
+        // console.log(periksaKelas);
+        if (periksaKelas == false) {
+            return {
+                success: false,
+                data: "Kelas tidak terdaftar"
+            }
+        }
+        data = await db.ujian_paketsoal_kategori.findOne({ where: { id: kategori_id } })
+        return {
+            success: true,
+            data
+        }
+        // const response = await Siswa.findOne({ where: { id }, include: kelas });
+        // return response;
+    } catch (error) {
+        console.log(error.message);
+    }
+};
 
 // private function
 // !fn-ujian-studi
@@ -301,4 +325,4 @@ const fn_get_me = async (id) => {
     }
 };
 // EXPORT MODULE
-module.exports = { getDataUjian, periksaUjianAktif, doUjianDaftar, periksa_daftar, getKategoriSoal }
+module.exports = { getDataUjian, periksaUjianAktif, doUjianDaftar, periksa_daftar, getKategoriSoal, getKategoriSoalDetail }

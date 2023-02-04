@@ -120,3 +120,26 @@ exports.getKategoriSoal = async (req, res) => {
         return res.status(500).send({ message: error.message });
     }
 };
+exports.getKategoriSoalDetail = async (req, res) => {
+    // console.log(req.params.ujian_proses_kelas_id);
+    try {
+        let success = false;
+        let data = null
+        // let message = "Tidak ada ujian aktif";
+        let response = await studiService.getKategoriSoalDetail(req.meId, req.params.ujian_paketsoal_id, req.params.kategori_id);
+        if (response) {
+            success = response.success;
+            data = response.data;
+            // message = "Ujian aktif ditemukan";
+        } else {
+            data = "-";
+        }
+        return res.status(200).send({
+            success,
+            data,
+            // message
+        });
+    } catch (error) {
+        return res.status(500).send({ message: error.message });
+    }
+};
