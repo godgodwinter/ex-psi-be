@@ -116,9 +116,9 @@ const getDataUjianEdit = async (meId, ujian_proses_kelas_id) => {
         // if (data.sisa_waktu < 0) {
         //     return null
         // }
-        console.log('====================================');
-        console.log(resGetUjianProses);
-        console.log('====================================');
+        // console.log('====================================');
+        // console.log(resGetUjianProses);
+        // console.log('====================================');
         return resGetUjianProses;
     } catch (error) {
         console.log(error.message);
@@ -351,7 +351,7 @@ const doMulaiUjian = async (meId, ujian_proses_kelas_id, ujian_paketsoal_kategor
             // !bug
             const periksaUjianAktif = await fn_periksa_ujian_aktif(meId);
             if (periksaUjianAktif) {
-                if (periksaUjianAktif.status == "Aktif" || periksaUjianAktif.sisa_waktu < 1) {
+                if (periksaUjianAktif.status == "Aktif" && periksaUjianAktif.sisa_waktu > 1) {
                     return {
                         success: false,
                         data: [],
