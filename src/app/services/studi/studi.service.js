@@ -83,24 +83,37 @@ const getDataUjianEdit = async (meId, ujian_proses_kelas_id) => {
         // const response = await paket.findOne({ where: { id: sekolah_id } });
         let data = null;
         const me = await fn_get_me(meId);
-        const resProsesKelas = await ujian_proses_kelas.findOne({ where: { kelas_id: me?.kelas?.id }, include: [db.ujian_proses] });
-        let ujian_proses_kelas_id = resProsesKelas.id;
-        const resProsesKelasSiswa = await ujian_proses_kelas_siswa.findOne({ where: { ujian_proses_kelas_id } });
-        let ujianProsesKelasSiswaId = resProsesKelasSiswa.id;
-        const resProsesKelasSiswaKategori = await ujian_proses_kelas_siswa_kategori.findOne({ where: { ujian_proses_kelas_siswa_id: ujianProsesKelasSiswaId, status: 'Aktif' }, order: [['updated_at', 'desc']] });
-        let { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at } = resProsesKelasSiswaKategori;
-        data = { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at };
+        const resProsesKelas = await ujian_proses_kelas.findOne({ where: { id: ujian_proses_kelas_id }, include: [db.ujian_proses] });
+        // let ujian_proses_kelas_id = resProsesKelas.id;
+
+        // console.log('====================================');
+        // console.log(resProsesKelas, ujian_proses_kelas_id);
+        // console.log('====================================');
+        // const resProsesKelasSiswa = await ujian_proses_kelas_siswa.findOne({ where: { ujian_proses_kelas_id } });
+        // let ujianProsesKelasSiswaId = ujian_proses_kelas_id;
+        let ujianProsesId = resProsesKelas.ujian_proses_id;
+        const resGetUjianProses = await db.ujian_proses.findOne({ where: { id: ujianProsesId } })
+        // console.log('====================================');
+        // console.log(ujianProsesId, "aa");
+        // console.log('====================================');
+        // const resProsesKelasSiswaKategori = await ujian_proses_kelas_siswa_kategori.findOne({ where: { ujian_proses_kelas_siswa_id: ujianProsesId, status: 'Aktif' }, order: [['updated_at', 'desc']] });
+        // let { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at } = resProsesKelasSiswaKategori;
+        // data = { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at };
         // console.log(moment().format("YYYY-MMMM-DD"));
-        let getSisaWaktu = await fn_get_sisa_waktu(tgl_selesai);
-        data.sisa_waktu = getSisaWaktu?.detik;
-        data.sisa_waktu_dalam_menit = getSisaWaktu?.menit;
-        data.ujian_proses_kelas_id = ujian_proses_kelas_id;
-        data.ujian_proses_kelas_siswa = resProsesKelasSiswa;
-        data.getSisaWaktu = getSisaWaktu;
-        if (data.sisa_waktu < 0) {
-            return null
-        }
-        return data;
+        // resGetUjianProses.setDataValue
+        // let getSisaWaktu = await fn_get_sisa_waktu(.tgl_selesai);
+        // data.sisa_waktu = getSisaWaktu?.detik;
+        // data.sisa_waktu_dalam_menit = getSisaWaktu?.menit;
+        // data.ujian_proses_kelas_id = ujian_proses_kelas_id;
+        // data.ujian_proses_kelas_siswa = resProsesKelasSiswa;
+        // data.getSisaWaktu = getSisaWaktu;
+        // if (data.sisa_waktu < 0) {
+        //     return null
+        // }
+        console.log('====================================');
+        console.log(resGetUjianProses);
+        console.log('====================================');
+        return resGetUjianProses;
     } catch (error) {
         console.log(error.message);
     }
