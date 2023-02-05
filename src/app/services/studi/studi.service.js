@@ -58,8 +58,14 @@ const periksaUjianAktif = async (meId) => {
         const me = await fn_get_me(meId);
         const resProsesKelas = await ujian_proses_kelas.findOne({ where: { kelas_id: me?.kelas?.id }, include: [db.ujian_proses] });
         let ujian_proses_kelas_id = resProsesKelas.id;
-        const resProsesKelasSiswa = await ujian_proses_kelas_siswa.findOne({ where: { ujian_proses_kelas_id } });
+        // console.log('====================================');
+        // console.log(ujian_proses_kelas_id);
+        // console.log('====================================');
+        const resProsesKelasSiswa = await ujian_proses_kelas_siswa.findOne({ where: { ujian_proses_kelas_id, siswa_id: meId } });
         let ujianProsesKelasSiswaId = resProsesKelasSiswa.id;
+        console.log('====================================');
+        console.log(ujianProsesKelasSiswaId);
+        console.log('====================================');
         const resProsesKelasSiswaKategori = await ujian_proses_kelas_siswa_kategori.findOne({ where: { ujian_proses_kelas_siswa_id: ujianProsesKelasSiswaId, status: 'Aktif' }, order: [['updated_at', 'desc']] });
         let { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at } = resProsesKelasSiswaKategori;
         data = { id, ujian_proses_kelas_siswa_id, status, hasil_per_kategori, tgl_mulai, tgl_selesai, waktu, ujian_paketsoal_kategori_id, created_at, updated_at };
