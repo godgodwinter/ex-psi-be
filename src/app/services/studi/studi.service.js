@@ -36,9 +36,11 @@ const getDataUjian = async (meId) => {
             // let jumlah_soal = 0;
             // let status = 'Belum';
             // let tipe = 'Pilihan ganda';
-
-            tempData.setDataValue("tgl", response?.ujian_proses?.tgl)
-            tempData.setDataValue("ujian_proses_status", response?.ujian_proses?.status);
+            console.log('====================================');
+            // console.log();
+            console.log('====================================');
+            tempData.setDataValue("tgl", tempData?.ujian_proses?.tgl)
+            tempData.setDataValue("ujian_proses_status", tempData?.ujian_proses?.status);
             const paketsoal = await ujian_paketsoal.findOne({ where: { id: tempData.paketsoal_id } });
             tempData.setDataValue("nama", paketsoal?.nama)
             data.push(tempData)
