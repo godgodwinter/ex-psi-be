@@ -407,7 +407,7 @@ const getSoal = async (meId, ujian_proses_kelas_id, ujian_paketsoal_kategori_id,
     let random_pilihanjawaban = get_ujian_paketsoal_kategori.random_pilihanjawaban == 'Aktif' ? true : false;
     let getSoal = await db.ujian_paketsoal_soal.findAll({
         where: {
-            ujian_paketsoal_kategori_id
+            ujian_paketsoal_kategori_id, deleted_at: null
         },
         order: [['nomer_urut', 'ASC']]
     })
