@@ -45,14 +45,14 @@ app.use(
 
 // Routes
 app.get('/', function (req, res) {
-    res.send('Hello World, ini Root Ini root');
+    res.send('This is Home!');
 });
 
 app.get('/ts', function (req, res) {
     res.send('this not ts project');
 });
 app.get('/expressjs', function (req, res) {
-    res.send('Hello World, ini expressJS');
+    res.send('express');
 });
 
 
