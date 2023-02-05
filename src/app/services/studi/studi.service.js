@@ -351,7 +351,7 @@ const doMulaiUjian = async (meId, ujian_proses_kelas_id, ujian_paketsoal_kategor
             // !bug
             const periksaUjianAktif = await fn_periksa_ujian_aktif(meId);
             if (periksaUjianAktif) {
-                if (periksaUjianAktif.status == "Aktif" || periksaUjianAktif.sisa_waktu > 1) {
+                if (periksaUjianAktif.status == "Aktif" || periksaUjianAktif.sisa_waktu < 1) {
                     return {
                         success: false,
                         data: [],
